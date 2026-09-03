@@ -1,4 +1,6 @@
 {
+  "buildCommand": "cd apps/web && next build --webpack",
+  "outputDirectory": "apps/web/.next",
   "crons": [
     { "path": "/api/cron/heartbeat", "schedule": "0 0 * * *" },
     { "path": "/api/cron/registry", "schedule": "15 0 * * *" }
