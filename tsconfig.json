@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "ES2022"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": { "@stockpilot/domain": ["packages/domain/src/index.ts"], "@stockpilot/engine": ["packages/portfolio-engine/src/index.ts"] }
+  },
+  "include": ["apps/**/*.ts", "apps/**/*.tsx", "packages/**/*.ts", "next-env.d.ts"]
+}

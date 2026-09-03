@@ -1,0 +1,16 @@
+{
+  "version": "2026-09-03-v1",
+  "chainId": 84532,
+  "venues": [
+    {
+      "id": "aerodrome",
+      "name": "Aerodrome",
+      "chainId": 84532,
+      "router": "",
+      "factory": "",
+      "approved": false,
+      "status": "pending-verification",
+      "reason": "Populate from current official deployment and verify each supported stock pool before enabling."
+    }
+  ]
+}
