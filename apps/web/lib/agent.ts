@@ -8,7 +8,7 @@ type Decision = { decision: "BUY" | "SKIP" | "REJECT"; asset_id: string; route_i
 export async function askStockPilotAgent(mandate: string) {
   const address = process.env.GENLAYER_STOCKPILOT_AGENT_ADDRESS as `0x${string}` | undefined;
   const key = process.env.GENLAYER_OPERATOR_PRIVATE_KEY as `0x${string}` | undefined;
-  if (!address || !key) return { mode: "mock", reason: "StockPilotAgent address or operator key is not configured", decision: mockDecision() };
+  if (!address || !key) return { mode: "unconfigured", reason: "StockPilotAgent address or operator key is not configured", decision: null };
   const requestId = crypto.randomUUID();
   const assets = getAssetRegistry();
   const routes = (await getRouteOptions()).filter((route) => route.status === "available");
@@ -27,5 +27,3 @@ export async function askStockPilotAgent(mandate: string) {
   const decisionHash = await client.readContract({ address, functionName: "get_decision_hash", args: [requestId] });
   return { mode: "genlayer", requestId, transactionHash, status, decision, decisionHash };
 }
-
-function mockDecision() { return { decision: "SKIP" as const, asset_id: "", route_id: "", weight: 0, reason_codes: ["AGENT_NOT_CONFIGURED", "NO_VERIFIED_ROUTE"] }; }
