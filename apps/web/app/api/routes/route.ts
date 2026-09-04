@@ -1,6 +1,8 @@
+import { getRouteOptions } from "../../../lib/venues";
 import { getRouteRegistry } from "../../../lib/runtime";
 
 export function GET() {
-  const routes = getRouteRegistry().filter((route) => route.available).sort((a, b) => a.priceImpactBps - b.priceImpactBps);
-  return Response.json({ chainId: 84532, mode: "demo", routes, bestRoute: routes[0] ?? null, disclaimer: "Demo route quotes; no transaction is submitted." });
+  const registry = getRouteRegistry();
+  const routes = getRouteOptions();
+  return Response.json({ chainId: registry.chainId, mode: "discovery", venue: registry.venue, routes, bestRoute: routes.find((route) => route.status === "available") ?? null, disclaimer: "Only routes with verified pool liquidity and quotes can be used for execution." });
 }

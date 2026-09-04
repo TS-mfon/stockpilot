@@ -19,6 +19,37 @@ export type VerifiedAsset = {
   active: boolean;
   verified: boolean;
   eligibilityStatus: "eligible" | "restricted" | "unknown";
+  priceFeed?: Address;
+};
+
+export type VenueRegistry = {
+  version: string;
+  chainId: number;
+  venue: {
+    id: string;
+    name: string;
+    router: Address;
+    factory: Address;
+    weth: Address;
+    usdc: Address;
+  };
+};
+
+export type RouteStatus = "available" | "unavailable" | "unverified";
+
+export type AssetRoute = {
+  id: string;
+  assetId: string;
+  venueId: string;
+  chainId: number;
+  tokenIn: Address;
+  tokenOut: Address;
+  status: RouteStatus;
+  liquidityUsd: number | null;
+  priceImpactBps: number | null;
+  feeBps: number | null;
+  checkedAt: string | null;
+  reason: string;
 };
 
 export type Mandate = {
@@ -55,9 +86,9 @@ export const DEFAULT_MANDATE: Mandate = {
   excludedAssets: [],
   riskProfile: "growth",
   timeHorizon: "long_term",
-  minimumAssets: 6,
-  maxSingleAssetWeight: 0.2,
-  maxSectorWeight: 0.6,
+  minimumAssets: 4,
+  maxSingleAssetWeight: 0.25,
+  maxSectorWeight: 1,
   rebalanceThreshold: 0.05,
   cadence: "monthly",
 };

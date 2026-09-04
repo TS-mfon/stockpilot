@@ -1,8 +1,5 @@
-[
-  {"id":"aerodrome-demo-1","venue":"Aerodrome (demo)","chainId":84532,"assetId":"demo-ai-1","inputSymbol":"USDC","outputSymbol":"DEMO1","pool":"USDC/DEMO1","liquidityUsd":1250000,"priceImpactBps":42,"feeBps":30,"available":true},
-  {"id":"aerodrome-demo-2","venue":"Aerodrome (demo)","chainId":84532,"assetId":"demo-ai-2","inputSymbol":"USDC","outputSymbol":"DEMO2","pool":"USDC/DEMO2","liquidityUsd":980000,"priceImpactBps":55,"feeBps":30,"available":true},
-  {"id":"aerodrome-demo-3","venue":"Aerodrome (demo)","chainId":84532,"assetId":"demo-ai-3","inputSymbol":"USDC","outputSymbol":"DEMO3","pool":"USDC/DEMO3","liquidityUsd":760000,"priceImpactBps":68,"feeBps":30,"available":true},
-  {"id":"aerodrome-demo-4","venue":"Aerodrome (demo)","chainId":84532,"assetId":"demo-ai-4","inputSymbol":"USDC","outputSymbol":"DEMO4","pool":"USDC/DEMO4","liquidityUsd":540000,"priceImpactBps":84,"feeBps":30,"available":true},
-  {"id":"aerodrome-demo-5","venue":"Aerodrome (demo)","chainId":84532,"assetId":"demo-ai-5","inputSymbol":"USDC","outputSymbol":"DEMO5","pool":"USDC/DEMO5","liquidityUsd":420000,"priceImpactBps":97,"feeBps":30,"available":true},
-  {"id":"aerodrome-demo-6","venue":"Aerodrome (demo)","chainId":84532,"assetId":"demo-ai-6","inputSymbol":"USDC","outputSymbol":"DEMO6","pool":"USDC/DEMO6","liquidityUsd":300000,"priceImpactBps":115,"feeBps":30,"available":true}
-]
+{
+  "version": "aerodrome-base-2026-09-04",
+  "chainId": 8453,
+  "venue": {"id":"aerodrome","name":"Aerodrome","router":"0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43","factory":"0x420DD381b31aEf6683db6B902084cB0FFECe40Da","weth":"0x4200000000000000000000000000000000000006","usdc":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"}
+}

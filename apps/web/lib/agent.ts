@@ -1,6 +1,7 @@
 import { createAccount, createClient } from "genlayer-js";
 import { hashCanonical } from "../../../packages/portfolio-engine/src/index";
-import { getAssetRegistry, getRouteRegistry, runtimeConfig } from "./runtime";
+import { getAssetRegistry, runtimeConfig } from "./runtime";
+import { getRouteOptions } from "./venues";
 
 type Decision = { decision: "BUY" | "SKIP" | "REJECT"; asset_id: string; route_id: string; weight: number; reason_codes: string[] };
 
@@ -10,7 +11,7 @@ export async function askStockPilotAgent(mandate: string) {
   if (!address || !key) return { mode: "mock", reason: "StockPilotAgent address or operator key is not configured", decision: mockDecision() };
   const requestId = crypto.randomUUID();
   const assets = getAssetRegistry();
-  const routes = getRouteRegistry().filter((route) => route.available);
+  const routes = getRouteOptions().filter((route) => route.status === "available");
   const payload = { request_id: requestId, mandate, asset_ids: assets.map((asset) => asset.id), route_ids: routes.map((route) => route.id), assets, routes };
   const client = createClient({ endpoint: runtimeConfig.genlayerRpcUrl, account: createAccount(key) });
   const transactionHash = await client.writeContract({ address, functionName: "analyze", args: [JSON.stringify(payload)], value: 0n, consensusMaxRotations: 2 });
@@ -27,4 +28,4 @@ export async function askStockPilotAgent(mandate: string) {
   return { mode: "genlayer", requestId, transactionHash, status, decision, decisionHash };
 }
 
-function mockDecision() { return { decision: "BUY" as const, asset_id: "demo-ai-1", route_id: "aerodrome-demo-1", weight: 180000000000000000, reason_codes: ["THEME_MATCH", "HIGHEST_LIQUIDITY"] }; }
+function mockDecision() { return { decision: "SKIP" as const, asset_id: "", route_id: "", weight: 0, reason_codes: ["AGENT_NOT_CONFIGURED", "NO_VERIFIED_ROUTE"] }; }

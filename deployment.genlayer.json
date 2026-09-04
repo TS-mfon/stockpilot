@@ -5,15 +5,15 @@
   "owner": "0xEd9EDd8586b20524CafA4F568413C504C9B03172",
   "runner": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
   "contracts": {
-    "PolicyAdjudicator": "0x126215BC26994Febaf7eACD4fb3bF40d3B5AF03f",
-    "PortfolioRegistry": "0xa4Ca812B74f101bfeDAFa0F99332d521274840CA",
-    "RebalanceAdjudicator": "0x0F94b9d14b3085038149E2Ae5953167720c2Da31",
-    "StockPilotAgent": "0xf526024bCEaB6Cff4D358269918eFea3160f1D5d"
+    "PolicyAdjudicator": "0xc43ce3C1f9Fc7c96b66Dda8A179561b95fbDaE36",
+    "PortfolioRegistry": "0x0aF3B67EfE8C1EF15a055947Be568aaB5783774a",
+    "RebalanceAdjudicator": "0xc0d600e257c5087A7BdFaF39c7f939E0e8d4D6c9",
+    "StockPilotAgent": "0x7b6D5203d4fb06C7DD8dfC33934a3Cf8e6d38C58"
   },
   "transactions": {
-    "PolicyAdjudicator": "0xe2236f43ba06102fc546cea64ad910807e7246de2865111a4d291ae2650361e8",
-    "PortfolioRegistry": "0x64c0ae3a0b1100f492618e437ebc6b3e5e5c396249704317bb559889f239f8a2",
-    "RebalanceAdjudicator": "0xa4a75c8e81381d538c0b2e738e2ee40ee23bf279928b6d41c43e6cf11c21b9a9",
-    "StockPilotAgent": "0x9299a1ea920c2ca651ba588e77971367dbfbb8c0c67639311e26dbc1b9f63ac6"
+    "PolicyAdjudicator": "0x6b7e688ce4c0db99fcbb2b1a0db688db24c24e40876468ac998f90f32d580c1b",
+    "PortfolioRegistry": "0xcc01504168c8f53a24562e79b0e6e20df396a95d393c9ce381a0e3d22d95776b",
+    "RebalanceAdjudicator": "0x315a2fece0ff91f4506be9d7b3e7905f27d4c1362fe18fe58b527b40ba4667bc",
+    "StockPilotAgent": "0x7577ebff507807105945942731510738fd56336eb9abcfb7af1afb0027d7dca4"
   }
 }

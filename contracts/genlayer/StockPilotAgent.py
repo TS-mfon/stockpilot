@@ -69,7 +69,16 @@ class StockPilotAgent(gl.Contract):
             if not _valid(candidate, assets, routes):
                 return False
             validator = _stable(decide())
-            return _valid(validator, assets, routes) and candidate["decision"] == validator["decision"]
+            if not _valid(validator, assets, routes) or candidate["decision"] != validator["decision"]:
+                return False
+            if candidate["decision"] != "BUY":
+                return True
+            weight_delta = abs(candidate["weight"] - validator["weight"])
+            return (
+                candidate["asset_id"] == validator["asset_id"]
+                and candidate["route_id"] == validator["route_id"]
+                and weight_delta <= 5 * 10**16
+            )
 
         result = gl.vm.run_nondet_unsafe(decide, validate)
         result = _stable(result)

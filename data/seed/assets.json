@@ -1,5 +1,11 @@
 {
-  "version": "2026-09-03-v1",
+  "version": "base-stocks-2026-09-04",
   "chainId": 8453,
-  "assets": []
+  "source": "Base official stocks page and Coinbase Tokenize",
+  "assets": [
+    {"id":"aapl-c","symbol":"AAPLc","name":"Apple","contractAddress":"0xb200000000000000000000C2e324d24d7eEcd1fb","chainId":8453,"issuer":"Coinbase","tokenStandard":"B20","underlyingSymbol":"AAPL","sector":"technology","industry":"consumer electronics","themes":["large cap","technology"],"decimals":18,"active":true,"verified":true,"eligibilityStatus":"eligible","priceFeed":"0x787f13dEa48Db0897CbCDD985de77809D837F988"},
+    {"id":"googl-c","symbol":"GOOGLc","name":"Alphabet","contractAddress":"0xb2000000000000000000002D0BA3164cc74f58B7","chainId":8453,"issuer":"Coinbase","tokenStandard":"B20","underlyingSymbol":"GOOGL","sector":"technology","industry":"internet services","themes":["large cap","technology","AI infrastructure"],"decimals":18,"active":true,"verified":true,"eligibilityStatus":"eligible","priceFeed":"0x5bF49E0ffA937CE2FfF033c739aD7C634c4D34F2"},
+    {"id":"meta-c","symbol":"METAc","name":"Meta","contractAddress":"0xb2000000000000000000008bC8786B856E61707C","chainId":8453,"issuer":"Coinbase","tokenStandard":"B20","underlyingSymbol":"META","sector":"technology","industry":"internet services","themes":["large cap","technology","AI infrastructure"],"decimals":18,"active":true,"verified":true,"eligibilityStatus":"eligible","priceFeed":"0x6526aE6797A76123638b863AeE4dD27Ba4E4b27D"},
+    {"id":"nvda-c","symbol":"NVDAc","name":"NVIDIA","contractAddress":"0xb20000000000000000000078ee7ce2fE4908108C","chainId":8453,"issuer":"Coinbase","tokenStandard":"B20","underlyingSymbol":"NVDA","sector":"semiconductors","industry":"AI infrastructure","themes":["AI infrastructure","semiconductors","large cap"],"decimals":18,"active":true,"verified":true,"eligibilityStatus":"eligible","priceFeed":"0x04689a41629776563E6822F76f2e57D148d28513"}
+  ]
 }
