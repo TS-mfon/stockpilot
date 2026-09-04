@@ -1,4 +1,3 @@
-import venues from "../../../data/seed/venues.json";
 import { getAssetRegistry, getRouteRegistry } from "./runtime";
 import type { AssetRoute } from "../../../packages/domain/src/index";
 import { createPublicClient, http, parseUnits } from "viem";
@@ -14,7 +13,7 @@ async function readWithRetry<T>(read: () => Promise<T>, attempts = 3): Promise<T
   throw lastError;
 }
 
-export function getVenueRegistry() { return venues; }
+export function getVenueRegistry() { return getRouteRegistry(); }
 
 export async function getRouteOptions(amountUsdc = 100): Promise<AssetRoute[]> {
   const registry = getRouteRegistry();

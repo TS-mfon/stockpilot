@@ -1,6 +1,6 @@
 import { DEFAULT_MANDATE, type Mandate, type VerifiedAsset } from "../../packages/domain/src/index";
 import { hashCanonical, optimizePortfolio } from "../../packages/portfolio-engine/src/index";
-import demoAssets from "../../data/seed/demo-assets.json";
+import assets from "../../data/seed/assets.json";
 
 export function parseMandate(prompt: string): Mandate {
   const lower = prompt.toLowerCase();
@@ -18,6 +18,6 @@ export function parseMandate(prompt: string): Mandate {
 
 export function buildPortfolio(prompt: string) {
   const mandate = parseMandate(prompt);
-  const allocations = optimizePortfolio(demoAssets as VerifiedAsset[], mandate);
-  return { portfolioId: crypto.randomUUID(), mandate, allocations, status: "simulation" as const, health: { themeAlignment: 92, diversification: 88, concentration: 90, liquidity: 72, dataConfidence: 100 }, registryVersion: "demo-only-2026-09-03", portfolioHash: hashCanonical({ mandate, allocations }), createdAt: new Date().toISOString(), execution: { mode: "simulation", liveEnabled: false, blockers: ["Demo registry only", "Eligibility provider not configured", "Approved live venue not configured"] } };
+  const allocations = optimizePortfolio(assets.assets as VerifiedAsset[], mandate);
+  return { portfolioId: crypto.randomUUID(), mandate, allocations, status: "simulation" as const, health: { themeAlignment: 92, diversification: 88, concentration: 90, liquidity: 0, dataConfidence: 100 }, registryVersion: "base-stocks-2026-09-04", portfolioHash: hashCanonical({ mandate, allocations }), createdAt: new Date().toISOString(), execution: { mode: "simulation", liveEnabled: false, blockers: ["Eligibility provider not configured", "Route verification required", "Settlement reconciliation required"] } };
 }
