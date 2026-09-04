@@ -22,6 +22,44 @@ def _stable(value: dict) -> dict:
     }
 
 
+def _unique_strings(values: list) -> list[str]:
+    result = []
+    seen = set()
+    for value in values:
+        normalized = str(value).strip()
+        if normalized and normalized not in seen:
+            result.append(normalized)
+            seen.add(normalized)
+    return result
+
+
+def _request_candidates(request: dict) -> tuple[list[str], list[str], dict[str, str]]:
+    asset_items = request.get("assets", [])
+    route_items = request.get("routes", [])
+    asset_values = list(request.get("asset_ids", []))
+    route_values = list(request.get("route_ids", []))
+    route_assets = {}
+    for item in asset_items[:MAX_CANDIDATES]:
+        if isinstance(item, dict):
+            asset_values.append(item.get("id", item.get("asset_id", "")))
+    for item in route_items[:MAX_CANDIDATES]:
+        if not isinstance(item, dict):
+            continue
+        route_id = item.get("id", item.get("route_id", ""))
+        asset_id = item.get("assetId", item.get("asset_id", ""))
+        route_id = str(route_id).strip()
+        asset_id = str(asset_id).strip()
+        if route_id:
+            route_values.append(route_id)
+            if asset_id:
+                route_assets[route_id] = asset_id
+    return (
+        _unique_strings(asset_values)[:MAX_CANDIDATES],
+        _unique_strings(route_values)[:MAX_CANDIDATES],
+        route_assets,
+    )
+
+
 def _valid(value: dict, assets: list[str], routes: list[str], route_assets: dict[str, str]) -> bool:
     decision = value.get("decision")
     if decision not in ["BUY", "SKIP", "REJECT"]:
@@ -68,12 +106,7 @@ class StockPilotAgent(gl.Contract):
     @gl.public.write
     def analyze(self, request_json: str) -> None:
         request = json.loads(request_json)
-        assets = [str(item) for item in request.get("asset_ids", [])][:MAX_CANDIDATES]
-        routes = [str(item) for item in request.get("route_ids", [])][:MAX_CANDIDATES]
-        route_assets = {}
-        for item in request.get("routes", [])[:MAX_CANDIDATES]:
-            if isinstance(item, dict) and str(item.get("id", "")) in routes:
-                route_assets[str(item["id"])] = str(item.get("assetId", ""))
+        assets, routes, route_assets = _request_candidates(request)
         mandate = str(request.get("mandate", ""))[:2_000]
         candidates = _canonical({"assets": request.get("assets", [])[:MAX_CANDIDATES], "routes": request.get("routes", [])[:MAX_CANDIDATES]})[:MAX_PROMPT_CHARS]
         prompt = (
