@@ -33,6 +33,7 @@ export type VenueRegistry = {
     weth: Address;
     usdc: Address;
   };
+  pools?: Record<string, Address>;
 };
 
 export type RouteStatus = "available" | "unavailable" | "unverified";

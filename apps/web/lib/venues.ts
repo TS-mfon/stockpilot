@@ -15,13 +15,15 @@ async function readWithRetry<T>(read: () => Promise<T>, attempts = 3): Promise<T
 }
 
 function baseRpcUrls(): string[] {
-  return (process.env.NEXT_PUBLIC_BASE_RPC_URLS ?? process.env.NEXT_PUBLIC_BASE_RPC_URL ?? "https://mainnet.base.org")
+  const configured = (process.env.NEXT_PUBLIC_BASE_RPC_URLS ?? process.env.NEXT_PUBLIC_BASE_RPC_URL ?? "")
     .split(",").map((url) => url.trim()).filter(Boolean);
+  return [...new Set([...configured, "https://mainnet.base.org", "https://mainnet-preconf.base.org", "https://base-rpc.publicnode.com"])]
+    .filter((url) => url.startsWith("https://"));
 }
 
 export function getVenueRegistry() { return getRouteRegistry(); }
 
-export async function getRouteOptions(amountUsdc = 100): Promise<AssetRoute[]> {
+export async function getRouteOptions(amountUsdc = 1): Promise<AssetRoute[]> {
   const registry = getRouteRegistry();
   const assets = getAssetRegistry();
   const publicClient = createPublicClient({ chain: base, transport: fallback(baseRpcUrls().map((url) => http(url))) });
@@ -30,7 +32,14 @@ export async function getRouteOptions(amountUsdc = 100): Promise<AssetRoute[]> {
   for (const asset of assets) {
     const baseRoute = { id: `${registry.venue.id}-${asset.id}-usdc`, assetId: asset.id, venueId: registry.venue.id, chainId: registry.chainId, tokenIn: registry.venue.usdc, tokenOut: asset.contractAddress, status: "unavailable" as const, liquidityUsd: null, priceImpactBps: null, feeBps: null, checkedAt: new Date().toISOString(), reason: "No verified liquidity pool or quote found." };
     try {
-      const pool = await readWithRetry(() => publicClient.readContract({ address: registry.venue.factory, abi: factoryAbi, functionName: "getPool", args: [asset.contractAddress, registry.venue.usdc, false] }));
+      let pool: `0x${string}`;
+      try {
+        pool = await readWithRetry(() => publicClient.readContract({ address: registry.venue.factory, abi: factoryAbi, functionName: "getPool", args: [asset.contractAddress, registry.venue.usdc, false] }));
+      } catch (error) {
+        const cachedPool = registry.pools?.[asset.id];
+        if (!cachedPool) throw error;
+        pool = cachedPool;
+      }
       if (pool === "0x0000000000000000000000000000000000000000") { routes.push({ ...baseRoute, reason: "No Aerodrome volatile pool exists for this asset and USDC pair." }); continue; }
       const [reserves, token0] = await Promise.all([
         readWithRetry(() => publicClient.readContract({ address: pool, abi: poolAbi, functionName: "getReserves" })),

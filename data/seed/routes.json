@@ -1,5 +1,9 @@
 {
   "version": "aerodrome-base-2026-09-04",
   "chainId": 8453,
-  "venue": {"id":"aerodrome","name":"Aerodrome","router":"0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43","factory":"0x420DD381b31aEf6683db6B902084cB0FFECe40Da","weth":"0x4200000000000000000000000000000000000006","usdc":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"}
+  "venue": {"id":"aerodrome","name":"Aerodrome","router":"0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43","factory":"0x420DD381b31aEf6683db6B902084cB0FFECe40Da","weth":"0x4200000000000000000000000000000000000006","usdc":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"},
+  "pools": {
+    "aapl-c": "0x6b74fC52Dd84bEb8d2D1BE16732749Dee70C45e7",
+    "nvda-c": "0x2e39A9018330c8784956998185D23D9dB503d1F7"
+  }
 }

@@ -21,8 +21,16 @@ export async function askStockPilotAgent(mandate: string) {
   if (!address || !key) return { mode: "unconfigured", reason: "StockPilotAgent address or operator key is not configured", decision: null };
   const requestId = crypto.randomUUID();
   const assets = getAssetRegistry();
-  const routeOptions = await getRouteOptions();
+  const routeOptions = await getRouteOptions(1);
   const routes = routeOptions.filter((route) => route.status === "available");
+  if (routes.length === 0) {
+    return {
+      mode: "route_unavailable",
+      reason: "Base route discovery did not produce a verified quote; GenLayer was not called.",
+      routeDiagnostics: routeOptions.map((route) => ({ assetId: route.assetId, status: route.status, reason: route.reason })),
+      decision: null,
+    };
+  }
   const payload = { request_id: requestId, mandate, asset_ids: assets.map((asset) => asset.id), route_ids: routes.map((route) => route.id), assets, routes };
   const client = createClient({ endpoint: runtimeConfig.genlayerRpcUrl, account: createAccount(key) });
   const transactionHash = await client.writeContract({ address, functionName: "analyze", args: [JSON.stringify(payload)], value: 0n, consensusMaxRotations: 2 });
