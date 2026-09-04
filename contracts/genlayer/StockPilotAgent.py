@@ -6,6 +6,7 @@ import json
 
 MAX_CANDIDATES = 32
 MAX_PROMPT_CHARS = 12_000
+ONE = 10**18
 
 
 def _canonical(value: dict) -> str:
@@ -61,6 +62,8 @@ class StockPilotAgent(gl.Contract):
 
     def __init__(self, owner: str):
         self.owner = Address(owner)
+        self.decisions = TreeMap()
+        self.decision_hashes = TreeMap()
 
     @gl.public.write
     def analyze(self, request_json: str) -> None:
@@ -104,12 +107,11 @@ class StockPilotAgent(gl.Contract):
         result = _stable(result)
         if not _valid(result, assets, routes, route_assets):
             raise gl.vm.UserError("StockPilot decision failed validation")
+        options = []
         if result["decision"] == "BUY":
-            result["options"] = _options(routes, route_assets, result["route_id"])
-            result["weight"] = result["options"][0]["weight"]
-        else:
-            result["options"] = []
-            result["weight"] = 0
+            options = _options(routes, route_assets, result["route_id"])
+        result["options"] = options
+        result["weight"] = options[0]["weight"] if options else 0
         payload = _canonical(result)
         self.decisions[request["request_id"]] = payload
         self.decision_hashes[request["request_id"]] = hashlib.sha256(payload.encode("utf-8")).hexdigest()
@@ -122,3 +124,10 @@ class StockPilotAgent(gl.Contract):
     @gl.public.view
     def get_decision_hash(self, request_id: str) -> str:
         return self.decision_hashes.get(request_id, "")
+
+    @gl.public.view
+    def get_options(self, request_id: str) -> list:
+        value = self.decisions.get(request_id, "")
+        if not value:
+            return []
+        return json.loads(value).get("options", [])

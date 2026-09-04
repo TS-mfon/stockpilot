@@ -3,7 +3,17 @@ import { hashCanonical } from "../../../packages/portfolio-engine/src/index";
 import { getAssetRegistry, runtimeConfig } from "./runtime";
 import { getRouteOptions } from "./venues";
 
-type Decision = { decision: "BUY" | "SKIP" | "REJECT"; asset_id: string; route_id: string; weight: number; reason_codes: string[] };
+type DecisionOption = { asset_id: string; route_id: string; weight: string | number; reason_codes: string[] };
+type Decision = { decision?: "BUY" | "SKIP" | "REJECT"; asset_id?: string; route_id?: string; weight?: string | number; reason_codes?: string[]; options?: DecisionOption[] };
+
+async function readDecision(client: ReturnType<typeof createClient>, address: `0x${string}`, requestId: string) {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const decision = await client.readContract({ address, functionName: "get_decision", args: [requestId] }) as unknown as Decision;
+    if (decision.decision) return decision;
+    await new Promise((resolve) => setTimeout(resolve, 750));
+  }
+  return null;
+}
 
 export async function askStockPilotAgent(mandate: string) {
   const address = process.env.GENLAYER_STOCKPILOT_AGENT_ADDRESS as `0x${string}` | undefined;
@@ -23,7 +33,8 @@ export async function askStockPilotAgent(mandate: string) {
     if (status === "FINALIZED" || status === "ACCEPTED") break;
   }
   if (status !== "FINALIZED" && status !== "ACCEPTED") return { mode: "genlayer", requestId, transactionHash, status, decision: null, hash: hashCanonical(payload) };
-  const decision = await client.readContract({ address, functionName: "get_decision", args: [requestId] }) as unknown as Decision;
+  const decision = await readDecision(client, address, requestId);
+  if (!decision) return { mode: "genlayer", requestId, transactionHash, status, decision: null, reason: "Decision reached consensus but is not readable yet" };
   const decisionHash = await client.readContract({ address, functionName: "get_decision_hash", args: [requestId] });
   return { mode: "genlayer", requestId, transactionHash, status, decision, decisionHash };
 }
