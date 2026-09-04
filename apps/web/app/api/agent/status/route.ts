@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   if (!transactionHash || !requestId || !address || !key) return Response.json({ error: "transactionHash, requestId, and agent configuration are required" }, { status: 400 });
   try {
     const client = createClient({ endpoint: runtimeConfig.genlayerRpcUrl, account: createAccount(key) });
-    const transaction = await client.getTransaction({ hash: transactionHash });
+    const transaction = await client.getTransaction({ hash: transactionHash as `0x${string}` & { length: 66 } });
     const status = transaction.statusName ?? String(transaction.status);
     if (status !== "FINALIZED" && status !== "ACCEPTED") return Response.json({ mode: "genlayer", requestId, transactionHash, status, decision: null });
     const decision = await client.readContract({ address, functionName: "get_decision", args: [requestId] });

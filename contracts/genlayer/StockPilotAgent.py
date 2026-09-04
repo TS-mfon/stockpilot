@@ -63,11 +63,13 @@ class StockPilotAgent(gl.Contract):
             return _stable(raw if isinstance(raw, dict) else {})
 
         def validate(leader_result: gl.vm.Result) -> bool:
-            candidate = _stable(json.loads(leader_result.calldata))
+            if not isinstance(leader_result, gl.vm.Return):
+                return False
+            candidate = _stable(leader_result.calldata)
             if not _valid(candidate, assets, routes):
                 return False
-            validator = decide()
-            return _stable(validator) == candidate
+            validator = _stable(decide())
+            return _valid(validator, assets, routes) and candidate["decision"] == validator["decision"]
 
         result = gl.vm.run_nondet_unsafe(decide, validate)
         result = _stable(result)
