@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { createWalletClient, custom, encodeFunctionData, parseUnits } from "viem";
-import { base, baseSepolia } from "viem/chains";
+import { createPublicClient, createWalletClient, custom, http, parseUnits } from "viem";
+import { base } from "viem/chains";
 
 type Asset = { id: string; symbol: string; name: string; contractAddress: `0x${string}`; underlyingSymbol: string; sector: string; themes: string[] };
 type Result = { portfolioHash: string; allocations: { assetId: string; weight: number; reason: string }[]; assets: Asset[]; mandate: Record<string, unknown>; execution: { blockers: string[] }; health: Record<string, number> };
@@ -41,7 +41,7 @@ export default function Home() {
     setError("");
     if (!window.ethereum) { setError("Install a compatible wallet extension to connect."); return; }
     try {
-      const client = createWalletClient({ chain: baseSepolia, transport: custom(window.ethereum) });
+      const client = createWalletClient({ chain: base, transport: custom(window.ethereum) });
       const [address] = await client.requestAddresses();
       const chainId = await client.getChainId();
       setWallet({ address, chainId });
@@ -55,7 +55,12 @@ export default function Home() {
     const route = routes?.routes.find((item) => item.assetId === asset.id);
     if (!route) { setError("No route record exists for this asset."); return; }
     if (route.status !== "available" || !route.router || !route.factory || !route.quoteAmountOut) { setPurchaseStatus("Purchase blocked: this asset has no verified pool and quote."); return; }
-    if (wallet.chainId !== base.id) { setPurchaseStatus("Switch your wallet to Base mainnet to buy Coinbase Tokenized Stocks."); return; }
+    if (wallet.chainId !== base.id) {
+      try {
+        await window.ethereum!.request({ method: "wallet_switchEthereumChain", params: [{ chainId: `0x${base.id.toString(16)}` }] });
+        setWallet({ ...wallet, chainId: base.id });
+      } catch { setPurchaseStatus("Switch your wallet to Base mainnet to buy Coinbase Tokenized Stocks."); return; }
+    }
     const amountUsdc = window.prompt("USDC amount to spend", "100");
     if (!amountUsdc || !/^\d+(\.\d{1,6})?$/.test(amountUsdc)) { setPurchaseStatus("Enter a valid USDC amount."); return; }
     const fresh = await (await fetch(`/api/routes?amountUsdc=${encodeURIComponent(amountUsdc)}`)).json() as RouteResult;
@@ -68,7 +73,9 @@ export default function Home() {
     const erc20Abi = [{ name: "approve", type: "function", stateMutability: "nonpayable", inputs: [{ name: "spender", type: "address" }, { name: "amount", type: "uint256" }], outputs: [{ type: "bool" }] }] as const;
     const routerAbi = [{ name: "swapExactTokensForTokens", type: "function", stateMutability: "nonpayable", inputs: [{ name: "amountIn", type: "uint256" }, { name: "amountOutMin", type: "uint256" }, { name: "routes", type: "tuple[]", components: [{ name: "from", type: "address" }, { name: "to", type: "address" }, { name: "stable", type: "bool" }, { name: "factory", type: "address" }] }, { name: "to", type: "address" }, { name: "deadline", type: "uint256" }], outputs: [{ type: "uint256[]" }] }] as const;
     setPurchaseStatus("Approve USDC in your wallet…");
-    await client.writeContract({ address: tokenIn, abi: erc20Abi, functionName: "approve", args: [quoted.router, amountIn], account: wallet.address });
+    const publicClient = createPublicClient({ chain: base, transport: http("https://mainnet.base.org") });
+    const approvalHash = await client.writeContract({ address: tokenIn, abi: erc20Abi, functionName: "approve", args: [quoted.router, amountIn], account: wallet.address });
+    await publicClient.waitForTransactionReceipt({ hash: approvalHash });
     setPurchaseStatus("Confirm the swap in your wallet…");
     const hash = await client.writeContract({ address: quoted.router, abi: routerAbi, functionName: "swapExactTokensForTokens", args: [amountIn, minimumOut, [{ from: tokenIn, to: asset.contractAddress, stable: false, factory: quoted.factory }], wallet.address, BigInt(Math.floor(Date.now() / 1000) + 300)], account: wallet.address });
     setPurchaseStatus(`Swap submitted: ${hash.slice(0, 18)}…`);

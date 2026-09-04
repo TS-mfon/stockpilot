@@ -21,7 +21,8 @@ export async function askStockPilotAgent(mandate: string) {
   if (!address || !key) return { mode: "unconfigured", reason: "StockPilotAgent address or operator key is not configured", decision: null };
   const requestId = crypto.randomUUID();
   const assets = getAssetRegistry();
-  const routes = (await getRouteOptions()).filter((route) => route.status === "available");
+  const routeOptions = await getRouteOptions();
+  const routes = routeOptions.filter((route) => route.status === "available");
   const payload = { request_id: requestId, mandate, asset_ids: assets.map((asset) => asset.id), route_ids: routes.map((route) => route.id), assets, routes };
   const client = createClient({ endpoint: runtimeConfig.genlayerRpcUrl, account: createAccount(key) });
   const transactionHash = await client.writeContract({ address, functionName: "analyze", args: [JSON.stringify(payload)], value: 0n, consensusMaxRotations: 2 });
@@ -32,7 +33,7 @@ export async function askStockPilotAgent(mandate: string) {
     status = transaction.statusName ?? String(transaction.status);
     if (status === "FINALIZED" || status === "ACCEPTED") break;
   }
-  if (status !== "FINALIZED" && status !== "ACCEPTED") return { mode: "genlayer", requestId, transactionHash, status, decision: null, hash: hashCanonical(payload) };
+  if (status !== "FINALIZED" && status !== "ACCEPTED") return { mode: "genlayer", requestId, transactionHash, status, decision: null, routeCount: routes.length, routeDiagnostics: routeOptions.map((route) => ({ assetId: route.assetId, status: route.status, reason: route.reason })), hash: hashCanonical(payload) };
   const decision = await readDecision(client, address, requestId);
   if (!decision) return { mode: "genlayer", requestId, transactionHash, status, decision: null, reason: "Decision reached consensus but is not readable yet" };
   const decisionHash = await client.readContract({ address, functionName: "get_decision_hash", args: [requestId] });

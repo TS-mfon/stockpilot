@@ -1,6 +1,6 @@
 import { getAssetRegistry, getRouteRegistry } from "./runtime";
 import type { AssetRoute } from "../../../packages/domain/src/index";
-import { createPublicClient, http, parseUnits } from "viem";
+import { createPublicClient, fallback, http, parseUnits } from "viem";
 import { base } from "viem/chains";
 
 const factoryAbi = [{ name: "getPool", type: "function", stateMutability: "view", inputs: [{ name: "tokenA", type: "address" }, { name: "tokenB", type: "address" }, { name: "stable", type: "bool" }], outputs: [{ name: "pool", type: "address" }] }] as const;
@@ -14,12 +14,17 @@ async function readWithRetry<T>(read: () => Promise<T>, attempts = 3): Promise<T
   throw lastError;
 }
 
+function baseRpcUrls(): string[] {
+  return (process.env.NEXT_PUBLIC_BASE_RPC_URLS ?? process.env.NEXT_PUBLIC_BASE_RPC_URL ?? "https://mainnet.base.org")
+    .split(",").map((url) => url.trim()).filter(Boolean);
+}
+
 export function getVenueRegistry() { return getRouteRegistry(); }
 
 export async function getRouteOptions(amountUsdc = 100): Promise<AssetRoute[]> {
   const registry = getRouteRegistry();
   const assets = getAssetRegistry();
-  const publicClient = createPublicClient({ chain: base, transport: http(process.env.NEXT_PUBLIC_BASE_RPC_URL ?? "https://mainnet.base.org") });
+  const publicClient = createPublicClient({ chain: base, transport: fallback(baseRpcUrls().map((url) => http(url))) });
   const amountIn = parseUnits(String(Math.max(0.01, amountUsdc)), 6);
   const routes: AssetRoute[] = [];
   for (const asset of assets) {
