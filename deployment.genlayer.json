@@ -5,6 +5,11 @@
   "owner": "0xEd9EDd8586b20524CafA4F568413C504C9B03172",
   "runner": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
   "contracts": {
+    "PolicyAdjudicator": "0xa18b6DB85437e2342Bc37519FDb7b0bfdcbBCece",
+    "PortfolioRegistry": "0x44A5CA73975952175dDfEa53F5428fB22511B44b",
+    "RebalanceAdjudicator": "0xb0910E6AC1a913Da4DBF580b13Ce4945E4bFEc8D"
+  },
+  "transactions": {
     "PolicyAdjudicator": "0xd56ccb51d69a81e408286ccb1a0f02fbff32425b3e19e0b1c3b2aada711c19cd",
     "PortfolioRegistry": "0x4063af1e81bf567bfcae1fbdbddab9ea2cdc315ded2f70f8e8a438bfaef39f56",
     "RebalanceAdjudicator": "0xb003deabaf8a641169a646445fdefd8dea4744bb9734d79fdd5876d4f09d5714"
