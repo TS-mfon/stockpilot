@@ -1,4 +1,5 @@
 import demoAssets from "../../../data/seed/demo-assets.json";
+import routes from "../../../data/seed/routes.json";
 import type { VerifiedAsset } from "../../../packages/domain/src/index";
 
 export const runtimeConfig = {
@@ -15,6 +16,8 @@ export const runtimeConfig = {
 export function getAssetRegistry(): VerifiedAsset[] {
   return demoAssets as VerifiedAsset[];
 }
+
+export function getRouteRegistry() { return routes; }
 
 export function executionReadiness() {
   const blockers = [
