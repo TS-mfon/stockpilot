@@ -35,11 +35,25 @@ export function optimizePortfolio(assets: VerifiedAsset[], mandate: Mandate): Al
   const selected = [...candidates].sort((a, b) => (scores.get(b.id) ?? 0) - (scores.get(a.id) ?? 0)).slice(0, Math.max(mandate.minimumAssets, 6));
   const rawTotal = selected.reduce((sum, asset) => sum + (scores.get(asset.id) ?? 0), 0);
   const base = selected.map((asset) => ({ asset, score: scores.get(asset.id) ?? 0, weight: (scores.get(asset.id) ?? 0) / rawTotal }));
-  const capped = base.map((entry) => ({ ...entry, weight: Math.min(entry.weight, mandate.maxSingleAssetWeight) }));
-  const cappedTotal = capped.reduce((sum, entry) => sum + entry.weight, 0);
-  const allocations = capped.map(({ asset, score, weight }) => ({
+  let remaining = 1;
+  let open = [...base];
+  const bounded = new Map<string, number>();
+  while (open.length > 0) {
+    const openScore = open.reduce((sum, entry) => sum + entry.score, 0);
+    const capped = open.filter((entry) => entry.score / openScore * remaining > mandate.maxSingleAssetWeight);
+    if (capped.length === 0) {
+      for (const entry of open) bounded.set(entry.asset.id, remaining * entry.score / openScore);
+      break;
+    }
+    for (const entry of capped) {
+      bounded.set(entry.asset.id, mandate.maxSingleAssetWeight);
+      remaining -= mandate.maxSingleAssetWeight;
+    }
+    open = open.filter((entry) => !capped.includes(entry));
+  }
+  const allocations = base.map(({ asset, score }) => ({
     assetId: asset.id,
-    weight: weight / cappedTotal,
+    weight: bounded.get(asset.id) ?? 0,
     score,
     reason: `Thematic fit ${Math.round(score * 100)}/100; included under the ${mandate.theme} mandate and capped by concentration rules.`,
   }));

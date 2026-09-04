@@ -11,7 +11,7 @@ export async function askStockPilotAgent(mandate: string) {
   if (!address || !key) return { mode: "mock", reason: "StockPilotAgent address or operator key is not configured", decision: mockDecision() };
   const requestId = crypto.randomUUID();
   const assets = getAssetRegistry();
-  const routes = getRouteOptions().filter((route) => route.status === "available");
+  const routes = (await getRouteOptions()).filter((route) => route.status === "available");
   const payload = { request_id: requestId, mandate, asset_ids: assets.map((asset) => asset.id), route_ids: routes.map((route) => route.id), assets, routes };
   const client = createClient({ endpoint: runtimeConfig.genlayerRpcUrl, account: createAccount(key) });
   const transactionHash = await client.writeContract({ address, functionName: "analyze", args: [JSON.stringify(payload)], value: 0n, consensusMaxRotations: 2 });

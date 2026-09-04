@@ -50,6 +50,11 @@ export type AssetRoute = {
   feeBps: number | null;
   checkedAt: string | null;
   reason: string;
+  pool?: Address;
+  stable?: boolean;
+  factory?: Address;
+  router?: Address;
+  quoteAmountOut?: string;
 };
 
 export type Mandate = {
